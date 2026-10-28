@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f3f5f9" />
+  <title>আমার টাস্ক</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      font-family: Arial, sans-serif;
+      color: #202534;
+      background: #f3f5f9;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 32px 16px;
+      background: #f3f5f9;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      background: #465ee8;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      filter: brightness(0.94);
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 26px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px #18233a12;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: #6b7280;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      padding: 14px;
+      background: #f3f5f9;
+      border-radius: 12px;
+    }
+
+    .stat-card span,
+    .stat-card strong {
+      display: block;
+    }
+
+    .stat-card span {
+      color: #626b7b;
+      font-size: 14px;
+    }
+
+    .stat-card strong {
+      margin-top: 6px;
+      font-size: 24px;
+    }
+
+    .task-form,
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .task-form input,
+    .task-form select,
+    .tools input,
+    .tools select {
+      min-width: 130px;
+      padding: 11px;
+      border: 1px solid #cbd1dc;
+      border-radius: 8px;
+      background: white;
+      color: #202534;
+    }
+
+    #task-input,
+    #task-search {
+      flex: 1;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 18px;
+    }
+
+    .secondary-button {
+      background: #e9edf7;
+      color: #25304a;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 10px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: auto minmax(120px, 1fr) auto auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: #f6f7fa;
+      border-radius: 10px;
+    }
+
+    .task.high-priority {
+      border-left: 4px solid #df4050;
+    }
+
+    .task.low-priority {
+      border-left: 4px solid #465ee8;
+    }
+
+    .task.overdue {
+      background: #fff0f0;
+    }
+
+    .task-text {
+      overflow-wrap: anywhere;
+    }
+
+    .task.completed .task-text {
+      color: #777;
+      text-decoration: line-through;
+    }
+
+    .task-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      color: #596174;
+      font-size: 13px;
+    }
+
+    .edit-button {
+      background: #e5a323;
+      color: #202534;
+    }
+
+    .delete-button {
+      background: #df4050;
+    }
+
+    .empty-message {
+      padding: 18px;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    body.dark {
+      color: #edf0f7;
+      background: #171a22;
+    }
+
+    body.dark .app {
+      background: #232733;
+    }
+
+    body.dark .stat-card,
+    body.dark .task {
+      background: #303645;
+    }
+
+    body.dark .task.overdue {
+      background: #482d35;
+    }
+
+    body.dark input,
+    body.dark select {
+      color: #edf0f7;
+      background: #303645;
+      border-color: #50596b;
+    }
+
+    body.dark .subtitle,
+    body.dark .stat-card span,
+    body.dark .task-info,
+    body.dark .empty-message {
+      color: #c2c8d4;
+    }
+
+    body.dark .secondary-button {
+      background: #41495b;
+      color: white;
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 16px 10px;
+      }
+
+      .app {
+        padding: 18px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .task-form,
+      .tools {
+        flex-direction: column;
+      }
+
+      .task-form input,
+      .task-form select,
+      .tools input,
+      .tools select {
+        width: 100%;
+      }
+
+      .task {
+        grid-template-columns: auto 1fr auto;
+      }
+
+      .task-info {
+        grid-column: 2 / -1;
+      }
+
+      .task .edit-button {
+        grid-column: 2;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>আমার টাস্ক</h1>
+        <p class="subtitle">কাজ গুছিয়ে রাখুন, এগিয়ে যান।</p>
+      </div>
+      <button id="theme-button" type="button">🌙 ডার্ক মোড</button>
+    </header>
+
+    <section class="stats" aria-label="কাজের সারাংশ">
+      <div class="stat-card">
+        <span>মোট কাজ</span>
+        <strong id="total-count">০</strong>
+      </div>
+      <div class="stat-card">
+        <span>বাকি</span>
+        <strong id="remaining-count">০</strong>
+      </div>
+      <div class="stat-card">
+        <span>সম্পন্ন</span>
+        <strong id="completed-count">০</strong>
+      </div>
+      <div class="stat-card">
+        <span>দেরি হয়েছে</span>
+        <strong id="overdue-count">০</strong>
+      </div>
+    </section>
+
+    <form id="task-form" class="task-form">
+      <input
+        id="task-input"
+        type="text"
+        placeholder="কী কাজ করতে হবে?"
+        autocomplete="off"
+        required
+      />
+
+      <input id="task-date" type="date" aria-label="শেষ তারিখ" />
+
+      <select id="task-priority" aria-label="অগ্রাধিকার">
+        <option value="normal">সাধারণ</option>
+        <option value="high">জরুরি</option>
+        <option value="low">কম অগ্রাধিকার</option>
+      </select>
+
+      <select id="task-category" aria-label="ক্যাটাগরি">
+        <option value="ব্যক্তিগত">ব্যক্তিগত</option>
+        <option value="পড়াশোনা">পড়াশোনা</option>
+        <option value="কাজ">কাজ</option>
+        <option value="অন্যান্য">অন্যান্য</option>
+      </select>
+
+      <button type="submit">কাজ যোগ করুন</button>
+    </form>
+
+    <section class="tools" aria-label="কাজ খোঁজা ও সাজানো">
+      <input id="task-search" type="search" placeholder="কাজ খুঁজুন..." />
+
+      <select id="status-filter" aria-label="কাজের অবস্থা">
+        <option value="all">সব কাজ</option>
+        <option value="active">অসম্পন্ন</option>
+        <option value="completed">সম্পন্ন</option>
+        <option value="overdue">দেরি হয়েছে</option>
+        <option value="today">আজকের কাজ</option>
+        <option value="upcoming">আসন্ন কাজ</option>
+      </select>
+
+      <select id="category-filter" aria-label="ক্যাটাগরি অনুযায়ী দেখুন">
+        <option value="all">সব ক্যাটাগরি</option>
+        <option value="ব্যক্তিগত">ব্যক্তিগত</option>
+        <option value="পড়াশোনা">পড়াশোনা</option>
+        <option value="কাজ">কাজ</option>
+        <option value="অন্যান্য">অন্যান্য</option>
+      </select>
+
+      <select id="sort-select" aria-label="কাজ সাজান">
+        <option value="created">নতুন যোগ করা আগে</option>
+        <option value="dueDate">শেষ তারিখ অনুযায়ী</option>
+        <option value="priority">অগ্রাধিকার অনুযায়ী</option>
+        <option value="name">নাম অনুযায়ী</option>
+      </select>
+    </section>
+
+    <div class="actions">
+      <button id="clear-completed" class="secondary-button" type="button">
+        সম্পন্ন কাজ মুছুন
+      </button>
+      <button id="clear-all" class="secondary-button" type="button">
+        সব কাজ মুছুন
+      </button>
+      <button id="export-button" class="secondary-button" type="button">
+        ব্যাকআপ ডাউনলোড
+      </button>
+      <button id="import-button" class="secondary-button" type="button">
+        ব্যাকআপ ইমপোর্ট
+      </button>
+      <input id="import-file" type="file" accept=".json,application/json" hidden />
+    </div>
+
+    <p id="empty-message" class="empty-message" hidden></p>
+    <ul id="task-list" class="task-list"></ul>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const $ = (selector) => document.querySelector(selector);
+
+      const form = $("#task-form");
+      const input = $("#task-input");
+      const dateInput = $("#task-date");
+      const priorityInput = $("#task-priority");
+      const categoryInput = $("#task-category");
+
+      const taskList = $("#task-list");
+      const emptyMessage = $("#empty-message");
+
+      const totalCount = $("#total-count");
+      const remainingCount = $("#remaining-count");
+      const completedCount = $("#completed-count");
+      const overdueCount = $("#overdue-count");
+
+      const searchInput = $("#task-search");
+      const statusFilter = $("#status-filter");
+      const categoryFilter = $("#category-filter");
+      const sortSelect = $("#sort-select");
+
+      const clearCompletedButton = $("#clear-completed");
+      const clearAllButton = $("#clear-all");
+      const exportButton = $("#export-button");
+      const importButton = $("#import-button");
+      const importFile = $("#import-file");
+      const themeButton = $("#theme-button");
+
+      const TASKS_KEY = "my-tasks";
+      const THEME_KEY = "my-tasks-theme";
+
+      const requiredElements = [
+        form, input, dateInput, priorityInput, categoryInput,
+        taskList, emptyMessage, totalCount, remainingCount,
+        completedCount, overdueCount, searchInput, statusFilter,
+        categoryFilter, sortSelect, clearCompletedButton,
+        clearAllButton, exportButton, importButton, importFile,
+        themeButton
+      ];
+
+      if (requiredElements.some((element) => !element)) {
+        console.error("প্রয়োজনীয় HTML উপাদান পাওয়া যায়নি।");
+        return;
+      }
+
+      function createId() {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+          return window.crypto.randomUUID();
+        }
+        return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function normalizeTask(task) {
+        if (!task || typeof task !== "object") return null;
+
+        const text = String(task.text || "").trim();
+        if (!text) return null;
+
+        const priorities = ["high", "normal", "low"];
+        const categories = ["ব্যক্তিগত", "পড়াশোনা", "কাজ", "অন্যান্য"];
+
+        return {
+          id: String(task.id || createId()),
+          text,
+          completed: Boolean(task.completed),
+          dueDate: /^\d{4}-\d{2}-\d{2}$/.test(String(task.dueDate || ""))
+            ? String(task.dueDate)
+            : "",
+          priority: priorities.includes(task.priority) ? task.priority : "normal",
+          category: categories.includes(task.category)
+            ? task.category
+            : "ব্যক্তিগত",
+          createdAt: Number(task.createdAt) || Date.now()
+        };
+      }
+
+      function loadTasks() {
+        try {
+          const savedTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || "[]");
+          return Array.isArray(savedTasks)
+            ? savedTasks.map(normalizeTask).filter(Boolean)
+            : [];
+        } catch (error) {
+          console.error("সংরক্ষিত কাজ পড়া যায়নি:", error);
+          return [];
+        }
+      }
+
+      let tasks = loadTasks();
+
+      function saveTasks() {
+        try {
+          localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+        } catch (error) {
+          console.error("কাজ সংরক্ষণ করা যায়নি:", error);
+          alert("ব্রাউজারে কাজ সংরক্ষণ করা যায়নি। স্টোরেজ পূর্ণ কি না দেখুন।");
+        }
+      }
+
+      function getToday() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function isOverdue(task) {
+        return Boolean(task.dueDate && !task.completed && task.dueDate < getToday());
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "তারিখ নেই";
+        const [year, month, day] = dateString.split("-");
+        return `${day}/${month}/${year}`;
+      }
+
+      function updateStats() {
+        const completed = tasks.filter((task) => task.completed).length;
+        const overdue = tasks.filter(isOverdue).length;
+
+        totalCount.textContent = String(tasks.length);
+        completedCount.textContent = String(completed);
+        remainingCount.textContent = String(tasks.length - completed);
+        overdueCount.textContent = String(overdue);
+      }
+
+      function getVisibleTasks() {
+        const query = searchInput.value.trim().toLocaleLowerCase("bn");
+        const today = getToday();
+
+        return tasks.filter((task) => {
+          const matchesSearch = task.text.toLocaleLowerCase("bn").includes(query);
+          let matchesStatus = true;
+
+          switch (statusFilter.value) {
+            case "active":
+              matchesStatus = !task.completed;
+              break;
+            case "completed":
+              matchesStatus = task.completed;
+              break;
+            case "overdue":
+              matchesStatus = isOverdue(task);
+              break;
+            case "today":
+              matchesStatus = !task.completed && task.dueDate === today;
+              break;
+            case "upcoming":
+              matchesStatus =
+                !task.completed && Boolean(task.dueDate) && task.dueDate > today;
+              break;
+          }
+
+          const matchesCategory =
+            categoryFilter.value === "all" ||
+            task.category === categoryFilter.value;
+
+          return matchesSearch && matchesStatus && matchesCategory;
+        });
+      }
+
+      function sortTasks(taskArray) {
+        const sorted = [...taskArray];
+
+        if (sortSelect.value === "dueDate") {
+          sorted.sort((a, b) => {
+            const dateA = a.dueDate || "9999-12-31";
+            const dateB = b.dueDate || "9999-12-31";
+            return dateA.localeCompare(dateB);
+          });
+        } else if (sortSelect.value === "priority") {
+          const priorityOrder = { high: 0, normal: 1, low: 2 };
+          sorted.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+        } else if (sortSelect.value === "name") {
+          sorted.sort((a, b) => a.text.localeCompare(b.text, "bn"));
+        } else {
+          sorted.sort((a, b) => b.createdAt - a.createdAt);
+        }
+
+        return sorted;
+      }
+
+      function makeInfo(text) {
+        const span = document.createElement("span");
+        span.textContent = text;
+        return span;
+      }
+
+      function editTask(task) {
+        const newText = prompt("কাজের নাম:", task.text);
+        if (newText === null) return;
+
+        if (!newText.trim()) {
+          alert("কাজের নাম ফাঁকা রাখা যাবে না।");
+          return;
+        }
+
+        const newDate = prompt(
+          "শেষ তারিখ লিখুন (YYYY-MM-DD)। তারিখ মুছতে ফাঁকা রাখুন:",
+          task.dueDate
+        );
+        if (newDate === null) return;
+
+        const trimmedDate = newDate.trim();
+        if (trimmedDate && !/^\d{4}-\d{2}-\d{2}$/.test(trimmedDate)) {
+          alert("তারিখটি YYYY-MM-DD ফরম্যাটে লিখুন, যেমন 2026-10-28।");
+          return;
+        }
+
+        const newPriority = prompt(
+          "অগ্রাধিকার লিখুন: high, normal অথবা low",
+          task.priority
+        );
+        if (newPriority === null) return;
+
+        const priority = newPriority.trim().toLowerCase();
+        if (!["high", "normal", "low"].includes(priority)) {
+          alert("অগ্রাধিকার হিসেবে high, normal অথবা low লিখুন।");
+          return;
+        }
+
+        const newCategory = prompt(
+          "ক্যাটাগরি লিখুন: ব্যক্তিগত, পড়াশোনা, কাজ অথবা অন্যান্য",
+          task.category
+        );
+        if (newCategory === null) return;
+
+        const category = newCategory.trim();
+        if (!["ব্যক্তিগত", "পড়াশোনা", "কাজ", "অন্যান্য"].includes(category)) {
+          alert("ক্যাটাগরিটি তালিকার একটি থেকে বেছে লিখুন।");
+          return;
+        }
+
+        task.text = newText.trim();
+        task.dueDate = trimmedDate;
+        task.priority = priority;
+        task.category = category;
+
+        saveTasks();
+        renderTasks();
+      }
+
+      function deleteTask(task) {
+        if (!confirm(`“${task.text}” কাজটি মুছে ফেলবেন?`)) return;
+
+        tasks = tasks.filter((item) => item.id !== task.id);
+        saveTasks();
+        renderTasks();
+      }
+
+      function renderTasks() {
+        taskList.replaceChildren();
+
+        const visibleTasks = sortTasks(getVisibleTasks());
+        updateStats();
+
+        emptyMessage.hidden = visibleTasks.length > 0;
+
+        if (tasks.length === 0) {
+          emptyMessage.textContent = "এখনো কোনো কাজ যোগ করা হয়নি।";
+        } else if (visibleTasks.length === 0) {
+          emptyMessage.textContent = "এই খোঁজ বা ফিল্টারে কোনো কাজ নেই।";
+        } else {
+          emptyMessage.textContent = "";
+        }
+
+        const priorityNames = {
+          high: "জরুরি",
+          normal: "সাধারণ",
+          low: "কম অগ্রাধিকার"
+        };
+
+        visibleTasks.forEach((task) => {
+          const item = document.createElement("li");
+          item.className = "task";
+
+          if (task.completed) item.classList.add("completed");
+          if (task.priority === "high") item.classList.add("high-priority");
+          if (task.priority === "low") item.classList.add("low-priority");
+          if (isOverdue(task)) item.classList.add("overdue");
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = task.completed;
+          checkbox.setAttribute("aria-label", "কাজটি সম্পন্ন");
+          checkbox.addEventListener("change", () => {
+            task.completed = checkbox.checked;
+            saveTasks();
+            renderTasks();
+          });
+
+          const taskText = document.createElement("span");
+          taskText.className = "task-text";
+          taskText.textContent = task.text;
+
+          const info = document.createElement("span");
+          info.className = "task-info";
+          info.append(
+            makeInfo(`তারিখ: ${formatDate(task.dueDate)}`),
+            makeInfo(`অগ্রাধিকার: ${priorityNames[task.priority]}`),
+            makeInfo(`ক্যাটাগরি: ${task.category}`)
+          );
+
+          if (isOverdue(task)) info.append(makeInfo("দেরি হয়েছে"));
+
+          const editButton = document.createElement("button");
+          editButton.type = "button";
+          editButton.className = "edit-button";
+          editButton.textContent = "সম্পাদনা";
+          editButton.addEventListener("click", () => editTask(task));
+
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.className = "delete-button";
+          deleteButton.textContent = "মুছুন";
+          deleteButton.addEventListener("click", () => deleteTask(task));
+
+          item.append(checkbox, taskText, info, editButton, deleteButton);
+          taskList.append(item);
+        });
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const text = input.value.trim();
+        if (!text) {
+          input.focus();
+          return;
+        }
+
+        tasks.push({
+          id: createId(),
+          text,
+          completed: false,
+          dueDate: dateInput.value,
+          priority: priorityInput.value,
+          category: categoryInput.value,
+          createdAt: Date.now()
+        });
+
+        saveTasks();
+        form.reset();
+        priorityInput.value = "normal";
+        categoryInput.value = "ব্যক্তিগত";
+        input.focus();
+        renderTasks();
+      });
+
+      searchInput.addEventListener("input", renderTasks);
+      statusFilter.addEventListener("change", renderTasks);
+      categoryFilter.addEventListener("change", renderTasks);
+      sortSelect.addEventListener("change", renderTasks);
+
+      clearCompletedButton.addEventListener("click", () => {
+        const completedCountNow = tasks.filter((task) => task.completed).length;
+
+        if (completedCountNow === 0) {
+          alert("মুছে ফেলার মতো সম্পন্ন কাজ নেই।");
+          return;
+        }
+
+        if (!confirm(`${completedCountNow}টি সম্পন্ন কাজ মুছে ফেলবেন?`)) return;
+
+        tasks = tasks.filter((task) => !task.completed);
+        saveTasks();
+        renderTasks();
+      });
+
+      clearAllButton.addEventListener("click", () => {
+        if (tasks.length === 0) {
+          alert("মুছে ফেলার মতো কোনো কাজ নেই।");
+          return;
+        }
+
+        if (!confirm(
+          `সব ${tasks.length}টি কাজ মুছে ফেলবেন? এই কাজটি ফিরিয়ে আনা যাবে না।`
+        )) return;
+
+        tasks = [];
+        saveTasks();
+        renderTasks();
+      });
+
+      themeButton.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+
+        const theme = document.body.classList.contains("dark") ? "dark" : "light";
+
+        try {
+          localStorage.setItem(THEME_KEY, theme);
+        } catch (error) {
+          console.error("থিমের পছন্দ সংরক্ষণ করা যায়নি:", error);
+        }
+
+        updateThemeButton();
+      });
+
+      function updateThemeButton() {
+        const isDark = document.body.classList.contains("dark");
+        themeButton.textContent = isDark ? "☀️ লাইট মোড" : "🌙 ডার্ক মোড";
+        themeButton.setAttribute("aria-pressed", String(isDark));
+      }
+
+      exportButton.addEventListener("click", () => {
+        const backup = {
+          app: "my-task-manager",
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          tasks
+        };
+
+        const blob = new Blob(
+          [JSON.stringify(backup, null, 2)],
+          { type: "application/json" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "my-tasks-backup.json";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      importButton.addEventListener("click", () => importFile.click());
+
+      importFile.addEventListener("change", async () => {
+        const file = importFile.files?.[0];
+        if (!file) return;
+
+        try {
+          const parsed = JSON.parse(await file.text());
+
+          const importedTasks = Array.isArray(parsed)
+            ? parsed
+            : Array.isArray(parsed?.tasks)
+              ? parsed.tasks
+              : null;
+
+          if (!importedTasks) {
+            throw new Error("কাজের তালিকা পাওয়া যায়নি।");
+          }
+
+          const normalizedTasks = importedTasks
+            .map(normalizeTask)
+            .filter(Boolean);
+
+          if (!confirm(
+            `${normalizedTasks.length}টি কাজ ইমপোর্ট হবে। এতে বর্তমান তালিকা প্রতিস্থাপিত হবে। চালিয়ে যাবেন?`
+          )) return;
+
+          tasks = normalizedTasks;
+          saveTasks();
+          renderTasks();
+          alert("ব্যাকআপ সফলভাবে ইমপোর্ট হয়েছে।");
+        } catch (error) {
+          console.error("ব্যাকআপ ইমপোর্ট করা যায়নি:", error);
+          alert("ফাইলটি সঠিক JSON ব্যাকআপ নয় বা পড়া যায়নি।");
+        } finally {
+          importFile.value = "";
+        }
+      });
+
+      try {
+        document.body.classList.toggle(
+          "dark",
+          localStorage.getItem(THEME_KEY) === "dark"
+        );
+      } catch (error) {
+        console.error("থিমের পছন্দ পড়া যায়নি:", error);
+      }
+
+      updateThemeButton();
+      renderTasks();
+    });
+  </script>
+</body>
+</html>
